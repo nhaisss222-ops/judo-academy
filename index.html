@@ -30,6 +30,7 @@ html,body{margin:0;min-height:100%;background:#000;color:#fff;font:16px/1.4 syst
 (function(){
 var API="https://script.google.com/macros/s/AKfycby8SiHXc49S4toie1q-6jpW2RNNM9kBVPzLo1KXq-GyUz_-4jZ4mHcn_cR-C_JGBUwVFA/exec";
 var LS=window.localStorage;
+if(/[?&]reset/.test(location.search)){try{LS.removeItem("ljfk");LS.removeItem("ljfpage");}catch(e){}history.replaceState(null,"",location.pathname);}
 function K(){return LS.getItem("ljfk")||"";}
 var inf={},cch={},q=[],act=0;
 function pump(){while(act<3&&q.length){(function(j){act++;raw(j.fn,j.args).then(function(v){if(v&&v.ok&&j.fn!=="getPage")cch[j.key]={t:Date.now(),v:v};j.res(v);},j.rej).then(function(){act--;pump();});})(q.shift());}}
@@ -41,7 +42,10 @@ function post(fn,args){
   inf[key]=p;var d=function(){delete inf[key];};p.then(d,d);return p;
 }
 function raw(fn,args){
-  return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({k:K(),fn:fn,args:args||[]})}).then(function(r){return r.json();});
+  return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({k:K(),fn:fn,args:args||[]})}).then(function(r){return r.json();}).then(function(j){
+    if(j&&j.error==="bad code"){try{LS.removeItem("ljfk");LS.removeItem("ljfpage");}catch(e){}location.reload();}
+    return j;
+  });
 }
 function mk(ok,fail){
   return new Proxy({},{get:function(t,name){
