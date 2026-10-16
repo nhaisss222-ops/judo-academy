@@ -70,9 +70,20 @@ function addHead(){
   M("apple-mobile-web-app-capable","yes");M("mobile-web-app-capable","yes");
   M("apple-mobile-web-app-title","Judo Academy");M("apple-mobile-web-app-status-bar-style","black");M("theme-color","#000000");
 }
+function killShell(){
+  try{
+    var s=document.getElementById("shell");if(s&&s.parentNode)s.parentNode.removeChild(s);
+    var st=document.querySelectorAll("style");
+    for(var i=0;i<st.length;i++){if(st[i].textContent.indexOf("#shell")>-1&&st[i].textContent.indexOf("--page")<0&&st[i].textContent.length<1200)st[i].parentNode.removeChild(st[i]);}
+    document.body.style.background="";document.body.style.color="";
+    document.documentElement.style.background="";
+  }catch(e){}
+}
 function render(html){
   document.open();document.write(html);document.close();
+  killShell();
   try{addHead();}catch(e){}
+  setTimeout(killShell,50);setTimeout(killShell,500);setTimeout(killShell,1500);
   setTimeout(function(){
     var b=document.getElementById("logoutBtn");
     if(b){b.onclick=function(){LS.removeItem("ljfk");LS.removeItem("ljfpage");location.reload();};}
